@@ -1,19 +1,19 @@
-const ApiError = require("../../utils/ApiError");
+const { transformer } = require("../../utils/server");
 const ProductService = require("../services/product.service");
 
 const productService = new ProductService();
 
 class ProductController {
     async createProduct(product) {
-        return await productService.createProduct(product);
+        return transformer(await productService.createProduct(product));
     }
 
     async getProducts(params) {
-        return await productService.getProducts(params);
+        return transformer(await productService.getProducts(params));
     }
 
     async deleteProduct(params) {
-        return await productService.deleteProduct(params);
+        return transformer(await productService.deleteProduct(params));
     }
 }
 
