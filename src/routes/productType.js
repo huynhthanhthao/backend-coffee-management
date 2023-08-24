@@ -5,8 +5,12 @@ const productTypeController = new ProductTypeController();
 
 /* Create product type. */
 router.post("/", async function (req, res, next) {
-    const data = await productTypeController.createProductType(req.body);
-    return res.json(data);
+    try {
+        const data = await productTypeController.createProductType(req.body);
+        return res.json(data);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /* Get product type. */

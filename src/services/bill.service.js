@@ -1,10 +1,27 @@
+const { Op } = require("sequelize");
+const db = require("../models");
+const HttpStatus = require("http-status-codes");
+const { CatchException } = require("../../utils/ApiError");
+
+const { transformer } = require("../../utils/server");
 class BillService {
     async createBill(bill) {
-        return "API OK";
+        await db.Bill.create(bill);
+
+        return {};
     }
 
-    async getBills() {
-        return "API OK";
+    async getBills(params) {
+        const page = +params.page || 1;
+        const limit = +params.limit || 20;
+        const offset = (page - 1) * limit;
+
+        const data = await db.Bill.findAll({
+            limit,
+            offset,
+        });
+
+        return data;
     }
 
     async getBillById() {

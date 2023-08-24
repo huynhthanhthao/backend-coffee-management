@@ -1,31 +1,50 @@
 "use strict";
+const { ProductStatus } = require("../../enums");
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable("topping", {
+        await queryInterface.createTable("Products", {
             id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 primaryKey: true,
                 autoIncrement: true,
             },
-            name: {
-                type: Sequelize.STRING,
-                allowNull: false,
-            },
-            image: {
-                type: Sequelize.STRING,
+            productTypeId: {
+                type: Sequelize.INTEGER,
+                references: {
+                    model: {
+                        tableName: "ProductTypes",
+                    },
+                    key: "id",
+                },
+                onUpdate: "CASCADE",
+                onDelete: "CASCADE",
             },
             code: {
                 type: Sequelize.STRING,
             },
-            status: {
-                type: Sequelize.INTEGER,
+            image: {
+                type: Sequelize.STRING,
+            },
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false,
+            },
+            description: {
+                type: Sequelize.STRING,
                 allowNull: false,
             },
             price: {
                 type: Sequelize.DECIMAL(10, 2),
                 allowNull: false,
+                defaultValue: 0,
+            },
+            status: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                defaultValue: ProductStatus.VALID,
             },
             createdAt: {
                 allowNull: false,
@@ -38,6 +57,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable("topping");
+        await queryInterface.dropTable("Products");
     },
 };

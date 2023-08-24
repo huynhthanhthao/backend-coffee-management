@@ -1,45 +1,35 @@
 "use strict";
+
+const { ToppingStatus } = require("../../enums");
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable("product", {
+        await queryInterface.createTable("Toppings", {
             id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 primaryKey: true,
                 autoIncrement: true,
             },
-            productType: {
-                type: Sequelize.INTEGER,
-                references: {
-                    model: {
-                        tableName: "product_type",
-                    },
-                    key: "id",
-                },
-                onUpdate: "CASCADE",
-                onDelete: "CASCADE",
-            },
-            code: {
-                type: Sequelize.STRING,
-            },
-            image: {
-                type: Sequelize.STRING,
-            },
             name: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            description: {
+            image: {
                 type: Sequelize.STRING,
-                allowNull: false,
             },
-            price: {
-                type: Sequelize.INTEGER,
-                allowNull: false,
+            code: {
+                type: Sequelize.STRING,
             },
             status: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                defaultValue: ToppingStatus.VALID,
+            },
+            price: {
                 type: Sequelize.DECIMAL(10, 2),
+                defaultValue: 0,
                 allowNull: false,
             },
             createdAt: {
@@ -53,6 +43,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable("product");
+        await queryInterface.dropTable("Toppings");
     },
 };

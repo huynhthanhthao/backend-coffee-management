@@ -1,11 +1,11 @@
 "use strict";
 const { Model } = require("sequelize");
-const { ProductStatus } = require("../enums");
+const { ProductStatus } = require("../../enums");
 module.exports = (sequelize, DataTypes) => {
     class Product extends Model {
         static associate(models) {
             Product.belongsTo(models.ProductType, {
-                foreignKey: "id",
+                foreignKey: "productTypeId",
                 as: "productType",
             });
         }
@@ -17,8 +17,9 @@ module.exports = (sequelize, DataTypes) => {
             code: DataTypes.STRING,
             description: DataTypes.STRING,
             image: DataTypes.STRING,
-            price: DataTypes.INTEGER,
+            price: DataTypes.DOUBLE,
             status: DataTypes.ENUM(ProductStatus.INVALID, ProductStatus.VALID),
+            productTypeId: DataTypes.INTEGER,
         },
         {
             sequelize,

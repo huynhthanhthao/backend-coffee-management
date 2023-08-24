@@ -1,3 +1,4 @@
+const ApiError = require("../../utils/ApiError");
 const ProductService = require("../services/product.service");
 
 const productService = new ProductService();
@@ -7,12 +8,12 @@ class ProductController {
         return await productService.createProduct(product);
     }
 
-    async getProduct() {
-        return await productService.getProduct();
+    async getProducts(params) {
+        return await productService.getProducts(params);
     }
 
-    async deleteProduct(productId) {
-        return await productService.deleteProduct(productId);
+    async deleteProduct(params) {
+        return await productService.deleteProduct(params);
     }
 }
 

@@ -7,20 +7,20 @@ class OrderController {
         return await orderService.createOrder(order);
     }
 
-    async getOrders() {
-        return await orderService.getOrders();
+    async getOrders(params) {
+        return await orderService.getOrders(params);
     }
 
-    async getOrderById() {
-        return await orderService.getOrderById();
+    async getOrderById(params) {
+        return await orderService.getOrderById(params);
     }
 
     async deleteOrder(orderId) {
         return await orderService.deleteOrder(orderId);
     }
 
-    async updateOrderStatus(order) {
-        return await orderService.updateOrderStatus(order);
+    async updateOrderStatus(params) {
+        return await orderService.updateOrderStatus(params);
     }
 
     async updateOrderProduct(order) {

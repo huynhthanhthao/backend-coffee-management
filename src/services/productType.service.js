@@ -1,20 +1,26 @@
-const db = require("../../models/index");
+const HttpStatus = require("http-status-codes");
+const { CatchException } = require("../../utils/ApiError");
 
-const ApiError = require("../../utils/ApiError");
+const db = require("../models");
 
 class ProductService {
     async createProductType(productType) {
         // Simple validate
+        if (!productType.name)
+            throw new CatchException({
+                response: { status: HttpStatus.default.BAD_REQUEST },
+                message: "Vui lòng nhập tên loại sản phẩm",
+            });
 
-        if (!productType.name) return new ApiError(400, "Vui lòng nhập tên loại sản phẩm.");
+        await db.ProductType.create(productType);
 
-        const data = await db.productType.create(productType);
-
-        return data;
+        return {};
     }
 
     async getProductTypes() {
-        return "API OK";
+        const data = await db.ProductType.findAll();
+
+        return data;
     }
 }
 

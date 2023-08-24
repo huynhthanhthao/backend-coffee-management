@@ -5,20 +5,32 @@ const productController = new ProductController();
 
 /* Create product. */
 router.post("/", async function (req, res, next) {
-    const data = await productController.createProductType(req.body);
-    return res.json(data);
+    try {
+        const data = await productController.createProduct(req.body);
+        return res.json(data);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /* Get product. */
 router.get("/", async function (req, res, next) {
-    const data = await productController.getProductTypes();
-    return res.json(data);
+    try {
+        const data = await productController.getProducts(req.query);
+        return res.json(data);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /* delete product. */
-router.delete("/", async function (req, res, next) {
-    const data = await productController.deleteProduct(req.body);
-    return res.json(data);
+router.delete("/:id", async function (req, res, next) {
+    try {
+        const data = await productController.deleteProduct(req.params);
+        return res.json(data);
+    } catch (error) {
+        next(error);
+    }
 });
 
 module.exports = router;

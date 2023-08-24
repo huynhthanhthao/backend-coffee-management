@@ -1,18 +1,20 @@
-class ApiError extends Error {
-    constructor(statusCode, message) {
-        super(message);
-        this.statusCode = statusCode;
-        this.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
-    }
+const HttpStatus = require("http-status-codes");
 
-    toJSON() {
-        return {
-            meta: {
-                code: this.statusCode,
-            },
-            message: this.message,
-        };
+class ExceptionResponse {
+    constructor(status = HttpStatus.default.BAD_GATEWAY, message = "Dữ liệu không hợp lệ!", data = null) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
     }
 }
 
-module.exports = ApiError;
+class CatchException extends ExceptionResponse {
+    constructor(error) {
+        super(error?.response?.status, error.message);
+    }
+}
+
+module.exports = {
+    ExceptionResponse,
+    CatchException,
+};

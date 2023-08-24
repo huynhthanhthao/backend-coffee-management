@@ -7,8 +7,8 @@ class BillController {
         return await billService.createBill(Bill);
     }
 
-    async getBills() {
-        return await billService.getBills();
+    async getBills(params) {
+        return await billService.getBills(params);
     }
 
     async getBillById() {

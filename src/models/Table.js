@@ -1,6 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
-const { TableStatus } = require("../enums");
+const { TableStatus } = require("../../enums");
 module.exports = (sequelize, DataTypes) => {
     class Table extends Model {}
     Table.init(
@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
             id: { type: DataTypes.INTEGER, primaryKey: true },
             code: DataTypes.STRING,
             note: DataTypes.STRING,
+            name: DataTypes.STRING,
             status: DataTypes.ENUM(TableStatus.INVALID, TableStatus.VALID),
         },
         {

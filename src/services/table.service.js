@@ -3,30 +3,30 @@ const { CatchException } = require("../../utils/ApiError");
 
 const { Op } = require("sequelize");
 const db = require("../models");
-const { ToppingStatus } = require("../../enums");
 
-class ToppingService {
-    async createTopping(topping) {
+class TableService {
+    async createTable(table) {
         // Simple validation
-        if (!topping.name) {
+        if (!table.name) {
             throw new CatchException({
                 response: { status: HttpStatus.default.BAD_REQUEST },
-                message: "Vui lòng nhập tên topping.",
+                message: "Vui lòng nhập số/tên bàn.",
             });
         }
-        await db.Topping.create(topping);
+
+        await db.Table.create(table);
         return {};
     }
 
-    async getToppings(params) {
+    async getTables(params) {
         const page = +params.page || 1;
         const limit = +params.limit || 20;
         const offset = (page - 1) * limit;
 
-        const data = await db.Topping.findAll({
+        const data = await db.Table.findAll({
             where: {
                 status: {
-                    [Op.eq]: ToppingStatus.VALID,
+                    [Op.gt]: 0,
                 },
             },
             limit,
@@ -35,17 +35,6 @@ class ToppingService {
 
         return data;
     }
-
-    async deleteTopping(params) {
-        console.log(params);
-        await db.Topping.destroy({
-            where: {
-                id: params.id,
-            },
-        });
-
-        return {};
-    }
 }
 
-module.exports = ToppingService;
+module.exports = TableService;

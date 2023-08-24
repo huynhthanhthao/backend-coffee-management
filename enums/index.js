@@ -12,6 +12,7 @@ const OrderStatus = {
     WAITING: 0,
     UNPAID: 1,
     PAID: 2,
+    CANCEL: 3,
 };
 
 const OrderType = {

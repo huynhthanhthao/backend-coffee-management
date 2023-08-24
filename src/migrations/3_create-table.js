@@ -1,17 +1,29 @@
 "use strict";
+
+const { TableStatus } = require("../../enums");
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable("bill", {
+        await queryInterface.createTable("Tables", {
             id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 primaryKey: true,
                 autoIncrement: true,
             },
-            order: {
-                type: Sequelize.JSON,
-                allowNull: true,
+            name: {
+                type: Sequelize.STRING,
+            },
+            code: {
+                type: Sequelize.STRING,
+            },
+            note: {
+                type: Sequelize.STRING,
+            },
+            status: {
+                type: Sequelize.INTEGER,
+                defaultValue: TableStatus.VALID,
             },
             createdAt: {
                 allowNull: false,
@@ -24,6 +36,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable("bill");
+        await queryInterface.dropTable("Tables");
     },
 };
