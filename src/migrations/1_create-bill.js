@@ -9,13 +9,22 @@ module.exports = {
                 primaryKey: true,
                 autoIncrement: true,
             },
-            order: {
-                type: Sequelize.JSON,
+            orderId: {
+                type: Sequelize.INTEGER,
+                references: {
+                    model: {
+                        tableName: "Orders",
+                    },
+                    key: "id",
+                },
+                onUpdate: "CASCADE",
+                onDelete: "CASCADE",
                 allowNull: false,
             },
             employee: {
                 type: Sequelize.STRING,
             },
+
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,

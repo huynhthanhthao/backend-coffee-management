@@ -12,8 +12,8 @@ class BillController {
         return transformer(await billService.getBills(params));
     }
 
-    async getBillById() {
-        return await billService.getBillById();
+    async getBillByOrderId(params) {
+        return transformer(await billService.getBillByOrderId(params));
     }
 }
 

@@ -2,19 +2,18 @@ const { Op } = require("sequelize");
 const db = require("../models");
 const HttpStatus = require("http-status-codes");
 const { CatchException } = require("../../utils/ApiError");
-
-const {} = require("../../utils/server");
-const { ProductStatus, ToppingStatus, OrderType, OrderStatus } = require("../../enums");
-
+const { ProductStatus, ToppingStatus, OrderType, OrderStatus, TableStatus } = require("../../enums");
 const BillService = require("../services/bill.service");
+const TableService = require("./table.service");
 const billService = new BillService();
+const tableService = new TableService();
 
 class OrderService {
     calculateTotal(productList) {
         const total = productList.reduce((currentTotal, productItem) => {
-            const totalTopping = productItem.toppingList.reduce((sum, topping) => sum + parseFloat(topping.price), 0);
-
-            return (parseFloat(productItem.product.price) + totalTopping) * productItem.amount + currentTotal;
+            const basePrice = parseFloat(productItem.product.price);
+            const toppingPrice = productItem.topping ? parseFloat(productItem.topping.price) : 0;
+            return (basePrice + toppingPrice) * productItem.amount + currentTotal;
         }, 0);
 
         return total;
@@ -38,26 +37,24 @@ class OrderService {
                         response: { status: HttpStatus.default.NOT_FOUND },
                         message: "Sản phẩm không tồn tại.",
                     });
-                const toppingListDetail = await db.Topping.findAll({
-                    where: {
-                        status: {
-                            [Op.eq]: ToppingStatus.VALID,
-                        },
-                        id: productItem.toppingIds,
-                    },
-                    attributes: ["id", "name", "price"],
-                });
 
-                if (toppingListDetail.length !== productItem.toppingIds.length) {
-                    throw new CatchException({
-                        response: { status: HttpStatus.default.NOT_FOUND },
-                        message: "Topping không tồn tại.",
+                let toppingDetail;
+
+                if (productItem.toppingId) {
+                    toppingDetail = await db.Topping.findOne({
+                        where: {
+                            status: {
+                                [Op.eq]: ToppingStatus.VALID,
+                            },
+                            id: productItem.toppingId,
+                        },
+                        attributes: ["id", "name", "price"],
                     });
                 }
 
                 return {
                     product: productDetail.dataValues,
-                    toppingList: toppingListDetail.map((topping) => topping.dataValues),
+                    topping: toppingDetail?.dataValues,
                     amount: productItem.amount,
                 };
             })
@@ -66,12 +63,21 @@ class OrderService {
 
     async createOrder(order) {
         // Simple validation
-        if (!order || !order?.productList || !order.tableId) {
+        if (!order || !order?.productList) {
             throw new CatchException({
                 response: { status: 400 },
                 message: "Thiếu dữ liệu.",
             });
         }
+
+        // Kiểm tra bàn có khả dụng
+        const table = await tableService.getTableById({ id: order.tableId });
+
+        if (!table)
+            throw new CatchException({
+                response: { status: 400 },
+                message: "Bàn không hợp lệ hoặc đang được sử dụng.",
+            });
 
         const productList = await this.getProductListDetail(order.productList);
 
@@ -82,7 +88,12 @@ class OrderService {
                 response: { status: 400 },
                 message: "Tổng tiền không hợp lệ.",
             });
-        await db.Order.create(order);
+
+        await Promise.all([
+            db.Order.create(order),
+            tableService.updateTableStatus({ tableId: order.tableId, status: TableStatus.INVALID }),
+        ]);
+
         return {};
     }
 
@@ -110,7 +121,7 @@ class OrderService {
             limit,
             offset,
             attributes: {
-                exclude: ["tableId", "productList"],
+                exclude: ["tableId"],
             },
         });
 
@@ -162,7 +173,8 @@ class OrderService {
             const employee = "Nguyen Van A";
 
             await Promise.all([
-                billService.createBill({ order, employee }),
+                billService.createBill({ orderDetail: order, employee, orderId: order.id, total: order.total }),
+                tableService.updateTableStatus({ tableId: order.table.id, status: TableStatus.VALID }),
                 db.Order.update(
                     { status: params.status },
                     {

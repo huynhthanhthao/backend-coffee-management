@@ -1,3 +1,4 @@
+var cors = require("cors");
 const HttpStatus = require("http-status-codes");
 const createError = require("http-errors");
 const express = require("express");
@@ -11,6 +12,8 @@ const database = require("./database");
 const { ExceptionResponse, CatchException } = require("./utils/ApiError");
 
 const app = express();
+
+app.use(cors());
 
 // connect database
 

@@ -19,4 +19,14 @@ router.get("/", async function (req, res, next) {
     return res.json(data);
 });
 
+/* Get bill by order */
+router.get("/:id/order", async function (req, res, next) {
+    try {
+        const data = await billController.getBillByOrderId(req.params);
+        return res.json(data);
+    } catch (err) {
+        next(error);
+    }
+});
+
 module.exports = router;

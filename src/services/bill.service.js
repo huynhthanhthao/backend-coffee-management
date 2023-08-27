@@ -2,7 +2,8 @@ const db = require("../models");
 
 class BillService {
     async createBill(bill) {
-        await db.Bill.create(bill);
+        const billExist = await this.getBillByOrderId({ id: bill.orderId });
+        if (!billExist) await db.Bill.create(bill);
 
         return {};
     }
@@ -20,8 +21,13 @@ class BillService {
         return data;
     }
 
-    async getBillById() {
-        return "API OK";
+    async getBillByOrderId(params) {
+        const data = await db.Bill.findOne({
+            where: {
+                orderId: params.id,
+            },
+        });
+        return data;
     }
 }
 
